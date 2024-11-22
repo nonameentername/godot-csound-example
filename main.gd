@@ -13,6 +13,56 @@ func csound_layout_changed():
 	csound = CsoundServer.get_csound("Main")
 	csound.send_control_channel("cutoff", 1)
 
+	csound.csound_ready.connect(csound_ready)
+
+
+func csound_ready(csound_name):
+	print ("csound is ready")
+
+	if csound_name != "Main":
+		return
+
+	csound.compile_orchestra("""
+<CsoundSynthesizer>
+<CsInstruments>
+
+instr buzz_instrument
+
+iFreq mtof p5
+iAmp = p6 / 127
+iFn  = 1
+
+kSeg linsegr iAmp, .5, iAmp / 2, 1, 0
+
+asig buzz 1, iFreq, kSeg * iAmp, iFn
+outs asig, asig
+
+endin
+
+massign 4, "buzz_instrument"
+
+</CsInstruments>
+<CsScore>
+f 1 0 16384 10 1
+</CsScore>
+</CsoundSynthesizer>
+""")
+
+	await get_tree().create_timer(10.0).timeout
+
+	csound.note_on(3, 64, 64)
+	csound.note_on(3, 66, 64)
+
+	await get_tree().create_timer(1.0).timeout
+
+	csound.note_on(3, 68, 64)
+
+	await get_tree().create_timer(3.0).timeout
+
+	csound.note_off(3, 64)
+	csound.note_off(3, 66)
+	csound.note_off(3, 68)
+
 
 func _process(_delta):
 	pass
