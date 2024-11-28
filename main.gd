@@ -39,8 +39,6 @@ outs asig, asig
 
 endin
 
-massign 4, "buzz_instrument"
-
 </CsInstruments>
 <CsScore>
 f 1 0 16384 10 1
@@ -50,18 +48,28 @@ f 1 0 16384 10 1
 
 	await get_tree().create_timer(10.0).timeout
 
-	csound.note_on(3, 64, 64)
-	csound.note_on(3, 66, 64)
+	send_note_on(3, 64, 64)
+	send_note_on(3, 66, 64)
 
 	await get_tree().create_timer(1.0).timeout
 
-	csound.note_on(3, 68, 64)
+	send_note_on(3, 68, 64)
 
 	await get_tree().create_timer(3.0).timeout
 
-	csound.note_off(3, 64)
-	csound.note_off(3, 66)
-	csound.note_off(3, 68)
+	send_note_off(3, 64)
+	send_note_off(3, 66)
+	send_note_off(3, 68)
+
+
+func send_note_on(chan: int, key: int, velocity: int):
+	var message: String = 'i"buzz_instrument" 0 -1 {chan} {key} {velocity}'.format({"chan": chan, "key": key, "velocity": velocity})
+	csound.event_string(message)
+
+
+func send_note_off(chan: int, key: int):
+	var message: String = 'i"buzz_instrument" 0 {chan} 0 {key}'.format({"chan": chan, "key": key})
+	csound.event_string(message)
 
 
 func _process(_delta):
