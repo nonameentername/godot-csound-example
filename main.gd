@@ -28,6 +28,7 @@ func csound_ready(csound_name):
 
 instr buzz_instrument
 
+iChan = p4
 iFreq mtof p5
 iAmp = p6 / 127
 iFn  = 1
@@ -49,6 +50,9 @@ f 1 0 16384 10 1
 	await get_tree().create_timer(10.0).timeout
 
 	send_note_on(3, 64, 64)
+
+	await get_tree().create_timer(1.0).timeout
+
 	send_note_on(3, 66, 64)
 
 	await get_tree().create_timer(1.0).timeout
@@ -68,7 +72,7 @@ func send_note_on(chan: int, key: int, velocity: int):
 
 
 func send_note_off(chan: int, key: int):
-	var message: String = 'i"buzz_instrument" 0 {chan} 0 {key}'.format({"chan": chan, "key": key})
+	var message: String = 'i"buzz_instrument" 0 0 {chan} {key} 0'.format({"chan": chan, "key": key})
 	csound.event_string(message)
 
 
