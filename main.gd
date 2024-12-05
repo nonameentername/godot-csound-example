@@ -17,12 +17,12 @@ func csound_layout_changed():
 
 
 func csound_ready(csound_name):
-	print ("csound is ready")
-
 	if csound_name != "Main":
 		return
 
-	csound.compile_orchestra("""
+	print ("csound is ready")
+
+	csound.compile_csd("""
 <CsoundSynthesizer>
 <CsInstruments>
 
@@ -40,39 +40,65 @@ outs asig, asig
 
 endin
 
+instr buzz_instrument2
+
+iChan = p4
+SNote = p5
+iFreq = ntof:i(SNote)
+iAmp = p6 / 127
+iFn  = 1
+
+kSeg linsegr iAmp, .5, iAmp / 2, 1, 0
+
+asig buzz 1, iFreq, kSeg * iAmp, iFn
+outs asig, asig
+
+endin
+
 </CsInstruments>
 <CsScore>
 f 1 0 16384 10 1
 </CsScore>
 </CsoundSynthesizer>
 """)
+	print (csound.evaluate_code('return 2 + 2'))
 
 	await get_tree().create_timer(10.0).timeout
 
-	send_note_on(3, 64, 64)
+	send_note_on(3, '4C', 64)
 
 	await get_tree().create_timer(1.0).timeout
 
-	send_note_on(3, 66, 64)
+	send_key_on(3, 62, 64)
 
 	await get_tree().create_timer(1.0).timeout
 
-	send_note_on(3, 68, 64)
+	send_key_on(3, 64, 64)
 
 	await get_tree().create_timer(3.0).timeout
 
-	send_note_off(3, 64)
-	send_note_off(3, 66)
-	send_note_off(3, 68)
+	send_note_off(3, '4C')
+	send_key_off(3, 62)
+	send_key_off(3, 64)
 
 
-func send_note_on(chan: int, key: int, velocity: int):
+func send_key_on(chan: int, key: int, velocity: int):
 	var message: String = 'i"buzz_instrument" 0 -1 {chan} {key} {velocity}'.format({"chan": chan, "key": key, "velocity": velocity})
 	csound.event_string(message)
 
 
-func send_note_off(chan: int, key: int):
+func send_key_off(chan: int, key: int):
 	var message: String = 'i"buzz_instrument" 0 0 {chan} {key} 0'.format({"chan": chan, "key": key})
+	csound.event_string(message)
+
+
+func send_note_on(chan: int, note_name: String, velocity: int):
+	var message: String = 'i "buzz_instrument2" 0 -1 {chan} "{note_name}" {velocity}'.format({"chan": chan, "note_name": note_name, "velocity": velocity})
+	csound.event_string(message)
+
+
+func send_note_off(chan: int, note_name: String):
+	var message: String = 'i "buzz_instrument2" 0 0 {chan} "{note_name}" 0'.format({"chan": chan, "note_name": note_name})
 	csound.event_string(message)
 
 
