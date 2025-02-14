@@ -6,4 +6,11 @@ Simple example Godot project that uses [godot-csound](https://github.com/nonamee
 build
 -----
 
-Build godot-csound and place build artifacts in the addons folder.
+1. Download depedencies
+
+    godot --headless -s package.gd install
+
+2. Import godot resources (twice)
+
+    godot --headless --import
+    godot --headless --import
