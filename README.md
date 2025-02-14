@@ -7,10 +7,12 @@ build
 -----
 
 1. Download depedencies
+```
+godot --headless -s package.gd install
+```
 
-    godot --headless -s package.gd install
-
-2. Import godot resources (twice)
-
-    godot --headless --import
-    godot --headless --import
+2. Import godot resources
+```
+godot --headless --import
+godot --headless --import
+```
