@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://n6csjkhxjfm2"]
 
-[ext_resource type="Script" path="res://main.gd" id="1_ob6y6"]
+[ext_resource type="Script" uid="uid://cdqnneoa60tri" path="res://main.gd" id="1_ob6y6"]
 
 [sub_resource type="AudioStreamCsound" id="AudioStreamCsound_a6stl"]
 
@@ -59,6 +59,7 @@ offset_bottom = 231.0
 text = "G4"
 
 [node name="Button" type="Button" parent="."]
+visible = false
 offset_left = 600.0
 offset_top = 159.0
 offset_right = 737.0

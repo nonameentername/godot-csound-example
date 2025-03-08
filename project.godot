@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="CsoundGodotExample"
-run/main_scene="res://main.tscn"
-config/features=PackedStringArray("4.3", "GL Compatibility")
+run/main_scene="uid://n6csjkhxjfm2"
+config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[audio]
+
+csound/hide_csound_logs=false
 
 [editor_plugins]
 
