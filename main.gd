@@ -1,28 +1,57 @@
 extends Node2D
 
 var csound: CsoundGodot
+var csound_instance: CsoundGodot
 
 @export var midi_file: Resource
 
 
 func _ready():
 	CsoundServer.connect("csound_layout_changed", csound_layout_changed)
+	CsoundServer.connect("csound_ready", csound_ready)
 
 
 func csound_layout_changed():
 	csound = CsoundServer.get_csound("Main")
 	csound.send_control_channel("cutoff", 1)
 
-	csound.csound_ready.connect(csound_ready)
-
 
 func csound_ready(csound_name):
 	if csound_name != "Main":
 		return
 
+	CsoundServer.add_csound()
+	var csound_index = CsoundServer.get_csound_count() -1
+
+	var csound_instance_name = "csound_instance"
+	CsoundServer.set_csound_name(csound_index, csound_instance_name)
+
+	csound_instance = CsoundServer.get_csound(csound_instance_name)
+
+	csound_instance.call_deferred("initialize")
+	csound_instance.csound_ready.connect(csound_instance_ready)
+
+
+func csound_instance_ready(csound_name):
+	if csound_name != "csound_instance":
+		return
+
+	var audio_stream_csound: AudioStreamCsound = AudioStreamCsound.new()
+	audio_stream_csound.set_csound_name(csound_name)
+
+	var audio_stream_player: AudioStreamPlayer = AudioStreamPlayer.new()
+	audio_stream_player.stream = audio_stream_csound
+	audio_stream_player.volume_db = -20
+
+	add_child(audio_stream_player)
+
+	audio_stream_player.play()
+
+	csound_instance.send_control_channel("cutoff", 1)
+
 	print ("csound is ready")
 
-	csound.compile_csd("""
+	csound_instance.compile_csd("""
 <CsoundSynthesizer>
 <CsInstruments>
 
@@ -61,7 +90,7 @@ f 1 0 16384 10 1
 </CsScore>
 </CsoundSynthesizer>
 """)
-	print (csound.evaluate_code('return 2 + 2'))
+	print (csound_instance.evaluate_code('return 2 + 2'))
 
 	await get_tree().create_timer(10.0).timeout
 
@@ -84,22 +113,22 @@ f 1 0 16384 10 1
 
 func send_key_on(chan: int, key: int, velocity: int):
 	var message: String = 'i"buzz_instrument" 0 -1 {chan} {key} {velocity}'.format({"chan": chan, "key": key, "velocity": velocity})
-	csound.event_string(message)
+	csound_instance.event_string(message)
 
 
 func send_key_off(chan: int, key: int):
 	var message: String = 'i"buzz_instrument" 0 0 {chan} {key} 0'.format({"chan": chan, "key": key})
-	csound.event_string(message)
+	csound_instance.event_string(message)
 
 
 func send_note_on(chan: int, note_name: String, velocity: int):
 	var message: String = 'i "buzz_instrument2" 0 -1 {chan} "{note_name}" {velocity}'.format({"chan": chan, "note_name": note_name, "velocity": velocity})
-	csound.event_string(message)
+	csound_instance.event_string(message)
 
 
 func send_note_off(chan: int, note_name: String):
 	var message: String = 'i "buzz_instrument2" 0 0 {chan} "{note_name}" 0'.format({"chan": chan, "note_name": note_name})
-	csound.event_string(message)
+	csound_instance.event_string(message)
 
 
 func _process(_delta):
