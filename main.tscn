@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://n6csjkhxjfm2"]
+[gd_scene load_steps=8 format=3 uid="uid://n6csjkhxjfm2"]
 
 [ext_resource type="Script" uid="uid://cdqnneoa60tri" path="res://main.gd" id="1_ob6y6"]
 
@@ -15,6 +15,8 @@ channel_left = "instr_4_left"
 channel_right = "instr_4_right"
 
 [sub_resource type="AudioStreamMyTone" id="AudioStreamMyTone_31rl7"]
+
+[sub_resource type="AudioStreamCsound" id="AudioStreamCsound_ig7tw"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1_ob6y6")
@@ -96,6 +98,10 @@ autoplay = true
 [node name="MyTonePlayer" type="AudioStreamPlayer" parent="."]
 stream = SubResource("AudioStreamMyTone_31rl7")
 volume_db = -80.0
+autoplay = true
+
+[node name="SynthPlayer" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamCsound_ig7tw")
 autoplay = true
 
 [connection signal="toggled" from="CheckButton" to="." method="_on_check_button_toggled"]
