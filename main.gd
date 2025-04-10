@@ -3,6 +3,9 @@ extends Node2D
 var csound: CsoundGodot
 var csound_instance: CsoundGodot
 
+@onready
+var synth_player: AudioStreamPlayer = $SynthPlayer
+
 @export var midi_file: Resource
 
 
@@ -10,16 +13,48 @@ func _ready():
 	CsoundServer.connect("csound_layout_changed", csound_layout_changed)
 	CsoundServer.connect("csound_ready", csound_ready)
 
+	var csound_layout: CsoundLayout = ResourceLoader.load("res://multiple_csound_instances_layout.tres")
+	CsoundServer.set_csound_layout(csound_layout)
+
 
 func csound_layout_changed():
 	csound = CsoundServer.get_csound("Main")
 	csound.send_control_channel("cutoff", 1)
 
+	synth_player.stream.set_csound_name("simple_synth")
+
 
 func csound_ready(csound_name):
-	if csound_name != "Main":
-		return
+	if csound_name == "Main":
+		add_csound_instance()
 
+	if csound_name == "simple_synth":
+		compile_synth_csd(csound_name)
+
+
+func compile_synth_csd(csound_name):
+	var csound_synth: CsoundGodot = CsoundServer.get_csound(csound_name)
+
+	csound_synth.compile_csd("""
+<CsoundSynthesizer>
+<CsInstruments>
+instr 1
+  print p4, p5
+  kenv linseg 0, 1, 1, 2, 0
+  a1 oscil p5 * kenv, p4, 1
+  outs a1, a1
+endin
+</CsInstruments>
+<CsScore>
+f 1 0 16384 10 1
+f 0 3600
+i 1 1 3 440 0.5
+</CsScore>
+</CsoundSynthesizer>
+""")
+
+
+func add_csound_instance():
 	CsoundServer.add_csound()
 	var csound_index = CsoundServer.get_csound_count() -1
 
@@ -46,8 +81,6 @@ func csound_instance_ready(csound_name):
 	add_child(audio_stream_player)
 
 	audio_stream_player.play()
-
-	csound_instance.send_control_channel("cutoff", 1)
 
 	print ("csound is ready")
 
