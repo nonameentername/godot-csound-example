@@ -1,7 +1,7 @@
 extends Node2D
 
-var csound: CsoundGodot
-var csound_instance: CsoundGodot
+var csound: CsoundInstance
+var csound_instance: CsoundInstance
 
 @onready
 var synth_player: AudioStreamPlayer = $SynthPlayer
@@ -33,7 +33,7 @@ func csound_ready(csound_name):
 
 
 func compile_synth_csd(csound_name):
-	var csound_synth: CsoundGodot = CsoundServer.get_csound(csound_name)
+	var csound_synth: CsoundInstance = CsoundServer.get_csound(csound_name)
 
 	csound_synth.compile_csd("""
 <CsoundSynthesizer>
