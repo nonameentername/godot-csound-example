@@ -10,8 +10,8 @@ var synth_player: AudioStreamPlayer = $SynthPlayer
 
 
 func _ready():
-	CsoundServer.connect("csound_layout_changed", csound_layout_changed)
-	CsoundServer.connect("csound_ready", csound_ready)
+	CsoundServer.csound_layout_changed.connect(csound_layout_changed)
+	CsoundServer.csound_ready.connect(csound_ready)
 
 	var csound_layout: CsoundLayout = ResourceLoader.load("res://multiple_csound_instances_layout.tres")
 	CsoundServer.set_csound_layout(csound_layout)
