@@ -14,5 +14,4 @@ godot --headless -s package.gd install
 2. Import godot resources
 ```
 godot --headless --import
-godot --headless --import
 ```
