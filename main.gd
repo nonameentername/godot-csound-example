@@ -10,6 +10,7 @@ var synth_player: AudioStreamPlayer = $SynthPlayer
 
 
 func _ready():
+	print ("godot-csound version: ", CsoundServer.get_version(), " build: ", CsoundServer.get_build())
 	CsoundServer.csound_layout_changed.connect(csound_layout_changed)
 	CsoundServer.csound_ready.connect(csound_ready)
 
