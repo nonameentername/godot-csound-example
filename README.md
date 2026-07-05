@@ -3,6 +3,8 @@ godot-csound-example
 
 Simple example Godot project that uses [godot-csound](https://github.com/nonameentername/godot-csound/).
 
+Currently works with Godot v4.7 stable release.
+
 build
 -----
 
